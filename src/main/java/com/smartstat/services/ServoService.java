@@ -18,7 +18,7 @@ public class ServoService {
 
   private static final Logger logger = LoggerFactory.getLogger(ServoService.class);
   private static final String HOME_DIRECTORY = System.getProperty("user.home");
-  private final String directionCommand = "sh -c python " + HOME_DIRECTORY + "/Desktop/test.py -D ";
+  private final String directionCommand = "lxterminal -e python " + HOME_DIRECTORY + "/Desktop/test.py -D ";
 
   public ServoService() {
   }
@@ -35,11 +35,16 @@ public class ServoService {
     try {
       var process = Runtime.getRuntime()
           .exec(directionCommand + direction.name());
-      StreamGobbler streamGobbler = new StreamGobbler(process.getInputStream(), System.out::println);
+
+      StreamGobbler inputGobbler = new StreamGobbler(process.getInputStream(), System.out::println);
       Executors.newSingleThreadExecutor()
-          .submit(streamGobbler);
+          .submit(inputGobbler);
+      
+      StreamGobbler errorGobbler = new StreamGobbler(process.getErrorStream(), System.out::println);
+      Executors.newSingleThreadExecutor()
+          .submit(errorGobbler);
+
       int exitCode = process.waitFor();
-      assert exitCode == 0;
     } catch (Exception e) {
       logger.debug("change direction failed with exception: {}", e.getMessage());
     }
