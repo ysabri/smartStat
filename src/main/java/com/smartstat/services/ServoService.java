@@ -17,8 +17,8 @@ import org.springframework.stereotype.Service;
 public class ServoService {
 
   private static final Logger logger = LoggerFactory.getLogger(ServoService.class);
-  private static final String HOME_DIRECTORY = System.getProperty("user.home");
-  private final String directionCommand = "lxterminal -e python " + HOME_DIRECTORY + "/Desktop/test.py -D ";
+  private static final String PROJECT_DIRECTORY = System.getProperty("user.dir");
+  private static final String directionCommand = "sudo python " + PROJECT_DIRECTORY + "/pyScripts/servoController.py -D ";
 
   public ServoService() {
   }
@@ -36,6 +36,8 @@ public class ServoService {
       var process = Runtime.getRuntime()
           .exec(directionCommand + direction.name());
 
+      logger.debug("python script was called using {}", directionCommand + direction.name());
+
       StreamGobbler inputGobbler = new StreamGobbler(process.getInputStream(), System.out::println);
       Executors.newSingleThreadExecutor()
           .submit(inputGobbler);
@@ -46,7 +48,7 @@ public class ServoService {
 
       int exitCode = process.waitFor();
     } catch (Exception e) {
-      logger.debug("change direction failed with exception: {}", e.getMessage());
+      logger.error("change direction failed with exception: {}", e.getMessage());
     }
   }
 
