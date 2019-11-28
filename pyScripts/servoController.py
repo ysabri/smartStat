@@ -2,17 +2,15 @@ import RPi.GPIO as GPIO
 import time
 import argparse, sys
 
+# direction signal powers
 RIGHT_VAL = 1.5
 UP_VAL = 6.5
 LEFT_VAL = 11.5
 
-#read the direction argument
+# read the direction argument
 parser = argparse.ArgumentParser()
-
 parser.add_argument("--direction", "-D", help="Set servo to given direction")
-
 direction = parser.parse_args().direction
-
 
 # setup the servo
 GPIO.setmode(GPIO.BOARD)
