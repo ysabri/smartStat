@@ -19,13 +19,11 @@ public class SmartStatService {
   }
 
   public void setOn() {
-    //logic to call python script with R
     servoService.setRight();
   }
 
   public void setOff() {
     servoService.setLeft();
-    // logic to call python script with L
   }
 
   public void setTemp(String temp) {
