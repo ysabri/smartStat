@@ -24,7 +24,7 @@ public class ServoService {
 
   private ShellOutService shellOutService;
 
-  @Value("{servo.script.filename}")
+  @Value("${servo.script.filename}")
   private String servoScriptFilename;
 
   @Autowired
