@@ -1,10 +1,11 @@
 package com.smartstat.services;
 
-import com.smartstat.constants.Directions;
+import com.smartstat.Exceptions.ShellingOutFailed;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,14 +19,18 @@ public class ShellOutService {
   public ShellOutService() {
   }
 
-  public void runScript(String command) {
+  public String runScript(String command) throws ShellingOutFailed {
     try {
       var process = Runtime.getRuntime()
           .exec(command);
 
       logger.debug("Shelling out using command {} ", command);
 
-      var inputGobbler = new StreamGobbler(process.getInputStream(), System.out::println);
+      AtomicReference<String> output = new AtomicReference<>("");
+      Consumer<String> captureOutput = output::set;
+
+      var inputGobbler = new StreamGobbler(process.getInputStream(), captureOutput);
+
       Executors.newSingleThreadExecutor()
           .submit(inputGobbler);
 
@@ -33,9 +38,13 @@ public class ShellOutService {
       Executors.newSingleThreadExecutor()
           .submit(errorGobbler);
 
+      // this will pause the thread until the process terminates, so output is guaranteed to have a value
       process.waitFor();
+
+      return output.get();
     } catch (Exception e) {
       logger.error("Shelling out failed with exception: {}", e.getMessage());
+      throw new ShellingOutFailed(e);
     }
   }
 

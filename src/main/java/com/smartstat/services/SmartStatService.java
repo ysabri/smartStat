@@ -7,15 +7,16 @@ import org.springframework.stereotype.Service;
 public class SmartStatService {
 
   private ServoService servoService;
+  private TempService tempService;
 
   @Autowired
-  public SmartStatService(ServoService servoService) {
+  public SmartStatService(ServoService servoService, TempService tempService) {
     this.servoService = servoService;
+    this.tempService = tempService;
   }
 
-  public String getTemp() {
-    // logic to call python temp script
-    return "";
+  public double getTemp() {
+    return tempService.getTemp();
   }
 
   public void setOn() {
@@ -29,6 +30,5 @@ public class SmartStatService {
   public void setTemp(String temp) {
     // logic to set global temp var
   }
-
 
 }

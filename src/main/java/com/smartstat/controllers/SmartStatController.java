@@ -18,7 +18,7 @@ public class SmartStatController {
   }
 
   @GetMapping("temp")
-  public String getTemp() {
+  public double getTemp() {
     return smartStatService.getTemp();
   }
 
