@@ -10,12 +10,14 @@ LEFT_VAL = 11.5
 # read the direction argument
 parser = argparse.ArgumentParser()
 parser.add_argument("--direction", "-D", help="Set servo to given direction")
+parser.add_argument("--servoPin", "-P", help="Input the servo's pin")
 direction = parser.parse_args().direction
+pin = int(parser.parse_args().servoPin)
 
 # setup the servo
 GPIO.setmode(GPIO.BOARD)
-GPIO.setup(7, GPIO.OUT)
-pmw = GPIO.PWM(7, 50)
+GPIO.setup(pin, GPIO.OUT)
+pmw = GPIO.PWM(pin, 50)
 
 # start the signal based on given argument
 if direction == "L":
