@@ -20,11 +20,11 @@ public class SmartStatService {
   }
 
   public void setOn() {
-    servoService.setRight();
+    servoService.toggleFirstServo();
   }
 
   public void setOff() {
-    servoService.setLeft();
+    servoService.toggleSecondServo();
   }
 
   public void setTemp(String temp) {
