@@ -38,7 +38,7 @@ public class ServoService {
 
   public void toggleSecondServo() {
     shellOutService.runScript(getCmd(U, SECOND_SERVO_PIN));
-    shellOutService.runScript(getCmd(R, SECOND_SERVO_PIN));
+    shellOutService.runScript(getCmd(L, SECOND_SERVO_PIN));
   }
 
   private String getCmd(Directions direction, int pin) {
