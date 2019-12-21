@@ -99,7 +99,7 @@ public class SmartStatService {
 
     private boolean currTempIsOk(double currTemp) {
       int exactTemp = (int) currTemp;
-      return wantedTemp.get() < exactTemp;
+      return wantedTemp.get() <= exactTemp;
     }
 
   }
