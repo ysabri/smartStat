@@ -4,7 +4,7 @@ import argparse, sys
 
 # direction signal powers
 RIGHT_VAL = 1.5
-UP_VAL = 6.5
+UP_VAL = 5.1
 LEFT_VAL = 11.5
 
 # read the direction argument

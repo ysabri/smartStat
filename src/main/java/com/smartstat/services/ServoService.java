@@ -15,7 +15,7 @@ public class ServoService {
   private static final String DIR_ARG = "-D ";
   private static final String PIN_ARG = "-P ";
 
-  private static final int FIRST_SERVO_PIN = 7;
+  private static final int FIRST_SERVO_PIN = 5;
   private static final int SECOND_SERVO_PIN = 11;
 
   private PythonCmdBuilder pythonCmdBuilder;
