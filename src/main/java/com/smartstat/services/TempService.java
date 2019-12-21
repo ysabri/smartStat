@@ -13,8 +13,8 @@ public class TempService {
 
   private ShellOutService shellOutService;
 
-  @Value("${dht22.script.filename}")
-  private String dht22ScriptFileName;
+  @Value("${ds18b20.script.filename}")
+  private String DS18B20ScriptFileName;
 
   @Autowired
   public TempService(PythonCmdBuilder pythonCmdBuilder, ShellOutService shellOutService) {
@@ -23,7 +23,7 @@ public class TempService {
   }
 
   public double getTemp() {
-    var tempCmd = pythonCmdBuilder.buildCommand(dht22ScriptFileName, "-D T");
+    var tempCmd = pythonCmdBuilder.buildCommand(DS18B20ScriptFileName);
     return parseDouble(shellOutService.runScript(tempCmd));
   }
 
