@@ -24,16 +24,16 @@ public class SmartStatController {
 
   @PostMapping("on")
   public void setOn() {
-    smartStatService.setOn();
+    smartStatService.turnOn();
   }
 
   @PostMapping("off")
   public void setOff() {
-    smartStatService.setOff();
+    smartStatService.turnOff();
   }
 
   @PostMapping("temp/{temp}")
-  public void setTemp(@PathVariable String temp) {
+  public void setTemp(@PathVariable int temp) {
     smartStatService.setTemp(temp);
   }
 
