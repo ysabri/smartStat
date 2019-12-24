@@ -1,4 +1,4 @@
-package com.smartstat.Exceptions;
+package com.smartstat.exceptions;
 
 public class ShellingOutFailed extends RuntimeException {
 

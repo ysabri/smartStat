@@ -1,6 +1,7 @@
 package com.smartstat.services;
 
-import com.smartstat.Exceptions.TempratureNotAllowedException;
+import com.smartstat.dtos.InfoDto;
+import com.smartstat.exceptions.TemperatureNotAllowedException;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -13,11 +14,12 @@ public class SmartStatService {
 
   public static final int MAX_TEMP = 80;
   private static final int INIT_TEMP = 70;
-  private static final int TIMER_PERIOD = 600000;
+  private static final int TIMER_PERIOD = 1200000;
 
   private ServoService servoService;
   private TempService tempService;
   private TempSetTask timerTask;
+  private AtomicInteger wantedTemp = new AtomicInteger(INIT_TEMP);
   private AtomicBoolean override = new AtomicBoolean(false);
   private AtomicBoolean isOn = new AtomicBoolean(false);
 
@@ -27,7 +29,7 @@ public class SmartStatService {
     this.tempService = tempService;
 
     var timer = new Timer();
-    this.timerTask = new TempSetTask(INIT_TEMP);
+    this.timerTask = new TempSetTask();
     timer.scheduleAtFixedRate(timerTask, 0, TIMER_PERIOD);
 
     setOff();
@@ -47,12 +49,19 @@ public class SmartStatService {
     override.set(true);
   }
 
-  public void setTemp(int temp) {
-    if (temp >= MAX_TEMP) {
-      throw new TempratureNotAllowedException();
+  public void setTemp(int givenTemp) {
+    if (givenTemp >= MAX_TEMP) {
+      throw new TemperatureNotAllowedException();
     }
-    timerTask.setTemp(temp);
+
+    wantedTemp.set(givenTemp);
     override.set(false);
+
+    changeStateBasedOnTemp();
+  }
+
+  public InfoDto getInfo() {
+    return new InfoDto(isOn.get(), getTemp(), wantedTemp.get(), override.get());
   }
 
   private void setOn() {
@@ -65,41 +74,43 @@ public class SmartStatService {
     isOn.set(false);
   }
 
-  private class TempSetTask extends TimerTask {
-    private AtomicInteger wantedTemp = new AtomicInteger();
+  private void changeStateBasedOnTemp() {
+    var currTemp = tempService.getTemp();
 
-    public TempSetTask(int initTemp) {
-      wantedTemp.set(initTemp);
+    // this most likely means something is wrong, thus the override
+    if (currTemp >= MAX_TEMP) {
+      setOff();
+      override.set(true);
     }
+
+    if (override.get()) {
+      return;
+    }
+
+    if (currTempIsOk(currTemp) && isOn.get()) {
+      setOff();
+    } else if (currTempIsNotOk(currTemp) && !isOn.get()) {
+      setOn();
+    }
+  }
+
+  private boolean currTempIsOk(double currTemp) {
+    return wantedTemp.get() <= toExactInt(currTemp);
+  }
+
+  private boolean currTempIsNotOk(double currTemp) {
+    return wantedTemp.get() >= toExactInt(currTemp);
+  }
+
+  private int toExactInt(double num) {
+    return (int) num;
+  }
+
+  private class TempSetTask extends TimerTask {
 
     @Override
     public void run() {
-      var currTemp = tempService.getTemp();
-
-      // this most likely means something is wrong, thus the override
-      if (currTemp >= MAX_TEMP) {
-        setOff();
-        override.set(true);
-      }
-
-      if (override.get()) {
-        return;
-      }
-
-      if (currTempIsOk(currTemp) && isOn.get()) {
-        setOff();
-      } else if (!currTempIsOk(currTemp) && !isOn.get()) {
-        setOn();
-      }
-    }
-
-    public void setTemp(int newTemp) {
-      wantedTemp.set(newTemp);
-    }
-
-    private boolean currTempIsOk(double currTemp) {
-      int exactTemp = (int) currTemp;
-      return wantedTemp.get() <= exactTemp;
+      changeStateBasedOnTemp();
     }
 
   }

@@ -1,5 +1,6 @@
 package com.smartstat.controllers;
 
+import com.smartstat.dtos.InfoDto;
 import com.smartstat.services.SmartStatService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,9 +18,14 @@ public class SmartStatController {
     this.smartStatService = smartStatService;
   }
 
-  @GetMapping("temp")
-  public double getTemp() {
-    return smartStatService.getTemp();
+  @GetMapping("info")
+  public InfoDto getInfo() {
+    return smartStatService.getInfo();
+  }
+
+  @PostMapping("currentTemp/{temp}")
+  public void setTemp(@PathVariable int temp) {
+    smartStatService.setTemp(temp);
   }
 
   @PostMapping("on")
@@ -30,11 +36,6 @@ public class SmartStatController {
   @PostMapping("off")
   public void setOff() {
     smartStatService.turnOff();
-  }
-
-  @PostMapping("temp/{temp}")
-  public void setTemp(@PathVariable int temp) {
-    smartStatService.setTemp(temp);
   }
 
 }

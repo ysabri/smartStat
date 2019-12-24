@@ -1,7 +1,8 @@
 package com.smartstat.services;
 
-import com.smartstat.Exceptions.ShellingOutFailed;
+import com.smartstat.exceptions.ShellingOutFailed;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.concurrent.Executors;
@@ -59,8 +60,12 @@ public class ShellOutService {
 
     @Override
     public void run() {
-      new BufferedReader(new InputStreamReader(inputStream)).lines()
-          .forEach(consumer);
+      try (var ioStream = new BufferedReader(new InputStreamReader(inputStream))) {
+        ioStream.lines()
+            .forEach(consumer);
+      } catch (IOException e) {
+        logger.error("consuming io stream failed: {}", e.getMessage());
+      }
     }
 
   }
