@@ -22,7 +22,7 @@ public class TempService {
     this.shellOutService = shellOutService;
   }
 
-  public double getTemp() {
+  public synchronized double getTemp() {
     var tempCmd = pythonCmdBuilder.buildCommand(DS18B20ScriptFileName);
     return parseDouble(shellOutService.runScript(tempCmd));
   }
