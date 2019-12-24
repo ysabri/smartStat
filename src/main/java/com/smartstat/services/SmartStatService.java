@@ -71,7 +71,7 @@ public class SmartStatService {
     wantedTemp.set(givenTemp);
     override.set(false);
 
-    changeStateBasedOnTemp();
+    changeStateBasedOnTemp(tempService.getTemp());
   }
 
   public InfoDto getInfo() {
@@ -90,9 +90,7 @@ public class SmartStatService {
     isOn.set(false);
   }
 
-  private void changeStateBasedOnTemp() {
-    var currTemp = tempService.getTemp();
-
+  private void changeStateBasedOnTemp(double currTemp) {
     // this most likely means something is wrong, thus the override
     if (currTemp >= MAX_TEMP) {
       setOff();
@@ -108,7 +106,6 @@ public class SmartStatService {
     } else if (!currTempIsOk(currTemp) && !isOn.get()) {
       setOn();
     }
-    logger.info(new Gson().toJson(new InfoDto(isOn.get(), currTemp, wantedTemp.get(), override.get(), 0, lastTunedOn)));
   }
 
   private boolean currTempIsOk(double currTemp) {
@@ -124,7 +121,11 @@ public class SmartStatService {
     @Override
     public void run() {
       lastChecked = now();
-      changeStateBasedOnTemp();
+      var currTemp = tempService.getTemp();
+
+      changeStateBasedOnTemp(currTemp);
+
+      logger.info(new Gson().toJson(new InfoDto(isOn.get(), currTemp, wantedTemp.get(), override.get(), 0, lastTunedOn)));
     }
 
   }
