@@ -1,8 +1,11 @@
 package com.smartstat;
 
+import static java.time.LocalDateTime.now;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 import com.smartstat.services.ServoService;
 import com.smartstat.services.SmartStatService;
@@ -49,6 +52,17 @@ public class SmartStatServiceTest {
     smartStatService.setTemp(INIT_TEMP + 1);
     info = smartStatService.getInfo();
     assertTrue(info.isOn());
+  }
+
+  @Test
+  public void testCheckedLast() {
+    var now = now();
+    var beg = now.minusMinutes(22l);
+    setField(smartStatService, "lastChecked", beg);
+
+    var info = smartStatService.getInfo();
+
+    assertEquals(info.getLastCheckedInMinutes(), 22l);
   }
 
 }

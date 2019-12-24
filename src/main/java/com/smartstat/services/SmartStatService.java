@@ -29,11 +29,12 @@ public class SmartStatService {
 
   private ServoService servoService;
   private TempService tempService;
+  private Timer timer;
   private AtomicInteger wantedTemp = new AtomicInteger(INIT_TEMP);
   private AtomicBoolean override = new AtomicBoolean(false);
   private AtomicBoolean isOn = new AtomicBoolean(false);
 
-  private LocalDateTime lastTunedOn;
+  private LocalDateTime lastTunedOn = now();
   private LocalDateTime lastChecked = now();
 
   @Autowired
@@ -41,7 +42,7 @@ public class SmartStatService {
     this.servoService = servoService;
     this.tempService = tempService;
 
-    var timer = new Timer();
+    timer = new Timer();
     TempSetTask timerTask = new TempSetTask();
     timer.scheduleAtFixedRate(timerTask, 0, TIMER_PERIOD);
 
