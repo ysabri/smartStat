@@ -1,18 +1,20 @@
 package com.smartstat.services;
 
-import static java.lang.Math.toIntExact;
+import static com.smartstat.constants.Mode.COOL;
+import static com.smartstat.constants.Mode.HEAT;
 import static java.time.LocalDateTime.now;
 import static java.time.temporal.ChronoUnit.MINUTES;
 
 import com.google.gson.Gson;
+import com.smartstat.constants.Mode;
 import com.smartstat.dtos.InfoDto;
 import com.smartstat.exceptions.TemperatureNotAllowedException;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +35,7 @@ public class SmartStatService {
   private AtomicInteger wantedTemp = new AtomicInteger(INIT_TEMP);
   private AtomicBoolean override = new AtomicBoolean(false);
   private AtomicBoolean isOn = new AtomicBoolean(false);
+  private AtomicReference<Mode> mode = new AtomicReference<>(HEAT);
 
   private LocalDateTime lastTunedOn = now();
   private LocalDateTime lastChecked = now();
@@ -51,6 +54,10 @@ public class SmartStatService {
 
   public double getTemp() {
     return tempService.getTemp();
+  }
+
+  public int getSetTemp() {
+    return wantedTemp.get();
   }
 
   public void turnOn() {
@@ -76,7 +83,19 @@ public class SmartStatService {
 
   public InfoDto getInfo() {
     var checkedMinutesAgo = MINUTES.between(lastChecked, now());
-    return new InfoDto(isOn.get(), getTemp(), wantedTemp.get(), override.get(), checkedMinutesAgo, lastTunedOn);
+    return new InfoDto(isOn.get(), getTemp(), wantedTemp.get(), override.get(), checkedMinutesAgo, lastTunedOn, getMode().getString());
+  }
+
+  public void setMode(Mode newMode) {
+    mode.set(newMode);
+  }
+
+  public Mode getMode() {
+    return mode.get();
+  }
+
+  public boolean isOn() {
+    return isOn.get();
   }
 
   private void setOn() {
@@ -109,6 +128,11 @@ public class SmartStatService {
   }
 
   private boolean currTempIsOk(double currTemp) {
+    if (mode.get()
+        .equals(COOL)) {
+      return wantedTemp.get() >= toExactInt(currTemp);
+    }
+
     return wantedTemp.get() <= toExactInt(currTemp);
   }
 
@@ -125,7 +149,7 @@ public class SmartStatService {
 
       changeStateBasedOnTemp(currTemp);
 
-      logger.info(new Gson().toJson(new InfoDto(isOn.get(), currTemp, wantedTemp.get(), override.get(), 0, lastTunedOn)));
+      logger.info(new Gson().toJson(new InfoDto(isOn.get(), currTemp, wantedTemp.get(), override.get(), 0, lastTunedOn, getMode().getString())));
     }
 
   }

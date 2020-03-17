@@ -38,6 +38,7 @@ dependencies {
 	}
 	compile "io.springfox:springfox-swagger2:2.9.2"
 	compile "io.springfox:springfox-swagger-ui:2.9.2"
+	compile "com.google.actions:actions-on-google:1.8.0"
 }
 
 test {
