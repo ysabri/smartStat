@@ -55,14 +55,15 @@ public class SmartHomeService extends SmartHomeApp {
     payload.setAgentUserId("1836.15267389");
     payload.setDevices(new Device[] { new Device.Builder().setId(ID)
                                           .setType("action.devices.types.THERMOSTAT")
-                                          .setTraits(List.of("action.devices.traits.TemperatureSetting"))
+                                          .setTraits(List.of("action.devices.traits.OnOff", "action.devices.traits.TemperatureSetting"))
                                           .setName(DeviceProto.DeviceNames.newBuilder()
                                               .addDefaultNames("Smart Stat")
                                               .setName("Smart stat")
                                               .addNicknames("Thermostat")
                                               .build())
                                           .setWillReportState(true)
-                                          .setAttributes(new JSONObject().put("availableThermostatModes", getMode())
+                                          .setAttributes(new JSONObject().put("availableThermostatModes", ON_OFF + "," + smartStatService.getMode()
+                                              .getString())
                                               .put("thermostatTemperatureRange", "65," + MAX_TEMP)
                                               .put("thermostatTemperatureUnit", "F"))
                                           .setDeviceInfo(DeviceProto.DeviceInfo.newBuilder()
@@ -110,9 +111,14 @@ public class SmartHomeService extends SmartHomeApp {
         logger.info("temp is set to {}", setPoint);
         break;
       case "action.devices.commands.ThermostatSetMode":
-        var thermostatMode = (String) params.get("thermostatMode");
-        setMode(thermostatMode);
-        logger.info("Thermostat is set to {}", thermostatMode);
+        var thermoMode = (String) params.get("thermostatMode");
+        setMode(thermoMode);
+        logger.info("Thermostat is set to {}", thermoMode);
+        break;
+      case "action.devices.commands.OnOff":
+        var isOn = (boolean) params.get("on");
+        setMode(isOn);
+        logger.info("Thermostat is set to {}", isOn);
         break;
       default:
         throw new ActionNotFoundException(command.getCommand());
@@ -170,8 +176,11 @@ public class SmartHomeService extends SmartHomeApp {
   }
 
   private String getMode() {
-    return smartStatService.getMode()
+    var mode = smartStatService.getMode()
         .getString();
+    var isOff = !smartStatService.isOn() && smartStatService.isOverride();
+
+    return isOff ? OFF : mode;
   }
 
   private void setTemp(double setTempC) {

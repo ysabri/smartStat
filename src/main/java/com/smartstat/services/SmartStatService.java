@@ -98,6 +98,10 @@ public class SmartStatService {
     return isOn.get();
   }
 
+  public boolean isOverride() {
+    return override.get();
+  }
+
   private void setOn() {
     servoService.toggleFirstServo();
     isOn.set(true);
