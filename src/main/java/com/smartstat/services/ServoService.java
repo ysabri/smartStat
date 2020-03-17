@@ -1,7 +1,6 @@
 package com.smartstat.services;
 
 import static com.smartstat.constants.Directions.L;
-import static com.smartstat.constants.Directions.R;
 import static com.smartstat.constants.Directions.U;
 
 import com.smartstat.constants.Directions;
@@ -31,12 +30,12 @@ public class ServoService {
     this.shellOutService = shellOutService;
   }
 
-  public void toggleFirstServo() {
+  synchronized public void toggleFirstServo() {
     shellOutService.runScript(getCmd(U, FIRST_SERVO_PIN));
     shellOutService.runScript(getCmd(L, FIRST_SERVO_PIN));
   }
 
-  public void toggleSecondServo() {
+  synchronized public void toggleSecondServo() {
     shellOutService.runScript(getCmd(U, SECOND_SERVO_PIN));
     shellOutService.runScript(getCmd(L, SECOND_SERVO_PIN));
   }

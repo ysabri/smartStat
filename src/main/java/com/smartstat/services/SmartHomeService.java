@@ -1,6 +1,7 @@
 package com.smartstat.services;
 
 import static com.smartstat.services.SmartStatService.MAX_TEMP;
+import static java.lang.Math.ceil;
 import static java.util.Arrays.stream;
 
 import com.google.actions.api.smarthome.DisconnectRequest;
@@ -188,7 +189,7 @@ public class SmartHomeService extends SmartHomeApp {
   }
 
   private Double getSetTemp() {
-    return toC(smartStatService.getSetTemp());
+    return ceil(toC(smartStatService.getSetTemp()));
   }
 
   private Double toC(double fTemp) {
@@ -196,7 +197,7 @@ public class SmartHomeService extends SmartHomeApp {
   }
 
   private int toF(Double cTemp) {
-    return (int) (cTemp * CONVERSION_FRACTION) + CONVERSION_OFFSET;
+    return (int) ceil((cTemp * CONVERSION_FRACTION) + CONVERSION_OFFSET);
   }
 
 }
