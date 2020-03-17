@@ -62,7 +62,8 @@ public class SmartHomeService extends SmartHomeApp {
                                               .addNicknames("Thermostat")
                                               .build())
                                           .setWillReportState(true)
-                                          .setAttributes(new JSONObject().put("availableThermostatModes", ON_OFF + "," + smartStatService.getMode())
+                                          .setAttributes(new JSONObject().put("availableThermostatModes", ON_OFF + "," + smartStatService.getMode()
+                                              .getString())
                                               .put("thermostatTemperatureRange", "65," + MAX_TEMP)
                                               .put("thermostatTemperatureUnit", "F"))
                                           .setDeviceInfo(DeviceProto.DeviceInfo.newBuilder()
@@ -152,6 +153,8 @@ public class SmartHomeService extends SmartHomeApp {
         });
       }
     });
+
+    logger.info("onQuery for {} and {}", getMode(), getSetTemp());
 
     return new QueryResponse(queryRequest.getRequestId(), payload);
   }
