@@ -191,12 +191,12 @@ public class SmartHomeService extends SmartHomeApp {
     return toC(smartStatService.getSetTemp());
   }
 
-  private Double toC(double setTemp) {
-    return CONVERSION_FRACTION * (setTemp - CONVERSION_OFFSET);
+  private Double toC(double fTemp) {
+    return (fTemp - CONVERSION_OFFSET) / CONVERSION_FRACTION;
   }
 
-  private int toF(Double setTempC) {
-    return (int) (CONVERSION_FRACTION * setTempC) + CONVERSION_OFFSET;
+  private int toF(Double cTemp) {
+    return (int) (cTemp * CONVERSION_FRACTION) + CONVERSION_OFFSET;
   }
 
 }
