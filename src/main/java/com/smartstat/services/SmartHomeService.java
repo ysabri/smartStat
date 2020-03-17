@@ -189,7 +189,7 @@ public class SmartHomeService extends SmartHomeApp {
   }
 
   private Double getSetTemp() {
-    return ceil(toC(smartStatService.getSetTemp()));
+    return toC(smartStatService.getSetTemp());
   }
 
   private Double toC(double fTemp) {
