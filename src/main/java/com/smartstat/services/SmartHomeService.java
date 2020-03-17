@@ -34,7 +34,7 @@ public class SmartHomeService extends SmartHomeApp {
   private final static String ON = "on";
   private final static String OFF = "off";
   private final static String ON_OFF = ON + "," + OFF;
-  private final static double CONVERSION_FRACTION = (5.0 / 9.0);
+  private final static double CONVERSION_FRACTION = (9.0 / 5.0);
   private final static int CONVERSION_OFFSET = 32;
 
   private static final Logger logger = LoggerFactory.getLogger(SmartHomeService.class);
@@ -193,7 +193,7 @@ public class SmartHomeService extends SmartHomeApp {
   }
 
   private int toF(Double setTempC) {
-    return (int) (CONVERSION_FRACTION * setTempC + CONVERSION_OFFSET);
+    return (int) (CONVERSION_FRACTION * setTempC) + CONVERSION_OFFSET;
   }
 
 }
